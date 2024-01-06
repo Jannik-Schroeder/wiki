@@ -1,0 +1,67 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: web
+  namespace: scpx
+spec:
+  selector:
+    app: web-dev
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-dev
+  namespace: scpx
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+        - name: web
+          image: ghcr.io/jannik-schroeder/wiki:latest
+          ports:
+            - containerPort: 3000
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: web
+  namespace: scpx
+  annotations:
+    kubernetes.io/ingress.class: traefik-external
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`scpx.de`)
+      kind: Rule
+      services:
+        - name: web
+          port: 3000
+  tls:
+    secretName: web-cert
+
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: web-cert
+  namespace: scpx
+spec:
+  secretName: web-cert
+  issuerRef:
+    name: letsencrypt-production
+    kind: ClusterIssuer
+  dnsNames:
+    - scpx.de
