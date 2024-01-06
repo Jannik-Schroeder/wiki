@@ -5,7 +5,7 @@ metadata:
   namespace: scpx
 spec:
   selector:
-    app: web-dev
+    app: web
   ports:
     - protocol: TCP
       port: 3000
@@ -14,7 +14,7 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: web-dev
+  name: web
   namespace: scpx
 spec:
   replicas: 3
@@ -28,7 +28,7 @@ spec:
     spec:
       containers:
         - name: web
-          image: ghcr.io/jannik-schroeder/wiki:latest
+          image: ghcr.io/jannik-schroeder/wiki:master
           ports:
             - containerPort: 3000
 
