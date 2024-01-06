@@ -1,0 +1,3 @@
+{
+  "k3s-setup": "Install HA k3s with Traefik, CertManager, and a Virtual IP"
+}
